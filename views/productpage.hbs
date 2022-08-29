@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Page</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        body {
+          margin: 0;
+          font-family: Arial, Helvetica, sans-serif;
+        }
+        
+        .topnav {
+          overflow: hidden;
+          background-color: rgb(70, 82, 82);
+        }
+        
+        .topnav a {
+          float: left;
+          color: #f2f2f2;
+          text-align: center;
+          padding: 14px 16px;
+          text-decoration: none;
+          font-size: 17px;
+        }
+        
+        .topnav a:hover {
+          background-color: #ddd;
+          color: black;
+        }
+        
+        .topnav a.active {
+          background-color: #030605;
+          color: white;
+        }
+        .brand1{
+          display:none
+        }
+        .brand2{
+          display:none
+        }
+        img{
+            width:60%
+        }
+        ul{
+            margin-left: 900px;
+            margin-top:-300px;
+            font-size:20px
+        }
+        .review{
+          padding-top:250px;
+          overflow: auto;
+        }
+      </style>
+  </head>
+  <body>
+    <div class="topnav">
+        <a id="homepage" href="/homepage">Home</a>
+        <a id="cart" href="/cartpage">Cart</a>
+        <a id="orders" href="/myorder">My Orders</a>
+        <div>
+        {{#if loggedIn}}
+          <a id="logout" href="" onclick=clearCookies()>Logout</a>
+        {{else}}
+          <a id="register" href="/register">Sign up</a>
+          <a id="login" href="/login">Login</a>
+        {{/if}}
+        </div>
+    </div>
+    <div style="padding-left:16px">
+    <div>
+    <div class="content" style="padding-top:20px">
+        <img src="imgs/Brand{{brand}}/{{img_id}}.jpg" id="{{img_id}}">
+        <ul class="product_list" >
+            <li id="{{productName}}">Product Name: {{productName}}</li>
+            <li id="{{intro}}">{{intro}}</li>
+            <li id="{{price}}">Price: {{price}}</li>
+            <li id="{{username}}" style="display:none"></li>
+            <li><input type="Button" id="addCart" value="Add to Cart" /></li>
+        </ul>
+        
+        
+    </div>
+    
+    <div class = "review">
+      <h1>Reviews</h1>
+      <form>
+          <select name="Rating" id="rating" style="float:right">
+          <option value="1">1 star</option>
+          <option value="2">2 stars</option>
+          <option value="3">3 stars</option>
+          <option value="4">4 stars</option>
+          <option value="5">5 stars</option>
+          </select>
+        <label for="review">Please leave your review here:</label>
+
+        <textarea id="userReview" name="userReview"
+                  rows="5" cols="33">
+        </textarea>
+        <input type="Button" id="submitReview" value="Submit"/>
+      </form>
+    </div>
+    <div class="Review_sec">
+      {{#each reviews}}
+          <hr>
+          <p>Reviewer: {{name}}</p>
+          <p>rating: {{rating}}</p>
+          <p>Review: {{review}}</p>
+          <hr>
+      {{/each}}
+    </div>
+
+    <script>
+       const host = "http://localhost:3000";
+        $(document).ready(function () {
+            $("#submitReview").on("click", function () {
+              console.log(111)
+              $.ajax({
+                url:'/productpage',
+                type:'POST',
+                contentType:"application/json; charset=utf-8",
+                data: JSON.stringify({
+                  rating: $('#rating option:selected').val(),
+                  review: $("#userReview").val(),
+                }),
+                success: function (res) {
+                    alert("Review added successfully")
+                    window.location = 'productpage'
+                  },
+                  error: function (e) {
+                    alert("Please login to leave a review")
+                    window.location = 'login';
+                  }   
+                });
+              })
+            })
+        $(document).ready(function () {
+            $("#addCart").on("click", function () {
+              if($("#logout").length > 0){
+                $.ajax({
+                  url: "/cartpage/" + $('#{{img_id}}').attr('id'),
+                  type: "POST",
+                  contentType: "application/json; charset=utf-8",
+                  success: function (res) {
+                    alert("Product added successfully")
+                    window.location = 'cartpage'
+                  },
+                  error: function (e) {
+                    window.location.reload();
+                  }   
+                });
+              } else{
+                 $.ajax({
+                  url: "/cartpage/0",
+                  type: "POST",
+                  data: JSON.stringify({
+                  }),
+                  contentType: "application/json; charset=utf-8",
+                  success: function (res) {
+                    alert("Please log in before add to cart")
+                    window.location = 'login'
+                  },
+                  error: function (e) {
+                    window.location.reload();
+                  }   
+                });
+              }
+          });
+        });
+  </script>
+  {{!-- Log out functions --}}
+  <script type="text/javascript">
+  function clearCookies(){
+    document.cookie.split(";").forEach(function(c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });
+  }
+</script>
+    
+</body>
+</html>

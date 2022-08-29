@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Page</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        body {
+          margin: 0;
+          font-family: Arial, Helvetica, sans-serif;
+        }
+        
+        .topnav {
+          overflow: hidden;
+          background-color: rgb(70, 82, 82);
+        }
+        
+        .topnav a {
+          float: left;
+          color: #f2f2f2;
+          text-align: center;
+          padding: 14px 16px;
+          text-decoration: none;
+          font-size: 17px;
+        }
+        
+        .topnav a:hover {
+          background-color: #ddd;
+          color: black;
+        }
+        
+        .topnav a.active {
+          background-color: #030605;
+          color: white;
+        }
+        .brand1{
+          display:none
+        }
+        .brand2{
+          display:none
+        }
+        img{
+            width:20%
+        }
+      </style>
+  </head>
+  <body>
+        
+    <div class="topnav">
+        <a id="homepage" href="/homepage">Home</a>
+        <a id="cart" href="/cartpage">Cart</a>
+        <a id="orders" href="/myorder">My Orders</a>
+        <div>
+        {{#if loggedIn}}
+          <a id="logout" href="" onclick= clearCookies() >Logout</a>
+        {{else}}
+          <a id="register" href="/register">Sign up</a>
+          <a id="login" href="/login">Login</a>
+        {{/if}}
+    </div>
+    </div>
+    <div style="padding-left:16px">
+    </div>
+    <div>
+      <div>
+      {{#if loggedIn}}
+        <ul class="cartList">
+        {{#each cartinfo}}
+          {{#each cart}}
+            <img src="imgs/Brand{{brand}}/{{img_id}}.jpg" id="{{img_id}}">
+            <li>product name: {{productName}}</li>
+            <li>product introduction: {{intro}}</li>
+            <li>product price {{price}}</li>
+            <li>product amount: {{amount}}</li>
+          {{/each}}
+            
+        </ul>
+        <h2>Total: {{total}}</h2>
+        {{/each}}  
+      
+     </div>
+
+      
+
+      <input type="Button" id="checkout" value="Checkout" />
+     {{else}}
+        <h1> Please Login to View Your Cart</h1>
+     {{/if}}
+      <script>
+        $(document).ready(function () {
+              $("#checkout").on("click", function () {
+                  $.ajax({
+                    url: "/checkout",
+                    type: "GET",
+                    contentType: "application/json; charset=utf-8",
+                    success: function (res) {
+                      window.location = 'checkout'
+                    },
+                    error: function (e) {
+                      window.location.reload();
+                    }   
+                  });
+              });
+            })
+    </script>
+    <script>
+      function clearCookies(){
+        document.cookie.split(";").forEach(function(c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });
+      }
+    </script>
+</body>
+</html>
